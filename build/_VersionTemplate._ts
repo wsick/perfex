@@ -1,0 +1,3 @@
+module perfex {
+    export var version = '%VERSION%';
+}

@@ -1,0 +1,19 @@
+{
+  "libs": {
+    "perfex": {
+      "exports": "perfex",
+      "deps": [
+        "qunit"
+      ]
+    },
+    "qunit": {}
+  },
+  "themes": {
+    "perfex": "none",
+    "qunit": "none"
+  },
+  "debug": {
+    "warnMissingThemes": false,
+    "warnBrokenPath": false
+  }
+}
