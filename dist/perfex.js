@@ -96,7 +96,7 @@ var perfex;
 (function (perfex) {
     function table() {
         var tags = perfex.timer.getUniqueTags();
-        var phases = phases.getUniqueTags();
+        var phases = perfex.phases.getUniqueTags();
         var records = tags.map(function (tag) {
             return phases.map(function (phase) { return new TimingRecord(tag, phase); }).concat([new TimingRecord(tag, null)]);
         });

@@ -4,8 +4,8 @@ interface Console {
 
 module perfex {
     export function table () {
-        var tags = timer.getUniqueTags();
-        var phases = phases.getUniqueTags();
+        var tags = perfex.timer.getUniqueTags();
+        var phases = perfex.phases.getUniqueTags();
 
         var records: TimingRecord[][] = tags
             .map(tag => {
