@@ -16,6 +16,7 @@ declare module perfex {
 declare module perfex {
     interface ITiming {
         tag: string;
+        context: any;
         phase: IPhase;
         start: number;
         duration: number;
@@ -24,7 +25,7 @@ declare module perfex {
         static all: ITiming[];
         static get(tag?: string, phase?: string): ITiming[];
         static reset(): void;
-        static start(tag: string): void;
+        static start(tag: string, context: any): void;
         static stop(): void;
     }
 }

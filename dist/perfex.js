@@ -57,9 +57,10 @@ var perfex;
         timer.reset = function () {
             timings.length = 0;
         };
-        timer.start = function (tag) {
+        timer.start = function (tag, context) {
             markers.push({
                 tag: tag,
+                context: context,
                 start: performance.now()
             });
         };
@@ -67,6 +68,7 @@ var perfex;
             var marker = markers.pop();
             timings.push({
                 tag: marker.tag,
+                context: marker.context,
                 phase: perfex.phases.current,
                 start: marker.start,
                 duration: performance.now() - marker.start

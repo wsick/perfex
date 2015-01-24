@@ -2,6 +2,7 @@ module perfex {
     var timings: ITiming[] = [];
     export interface ITiming {
         tag: string;
+        context: any;
         phase: IPhase;
         start: number;
         duration: number;
@@ -10,6 +11,7 @@ module perfex {
     var markers: IMarker[] = [];
     interface IMarker {
         tag: string;
+        context: any;
         start: number;
     }
 
@@ -28,9 +30,10 @@ module perfex {
             timings.length = 0;
         }
 
-        static start (tag: string) {
+        static start (tag: string, context: any) {
             markers.push({
                 tag: tag,
+                context: context,
                 start: performance.now()
             });
         }
@@ -39,6 +42,7 @@ module perfex {
             var marker = markers.pop();
             timings.push({
                 tag: marker.tag,
+                context: marker.context,
                 phase: phases.current,
                 start: marker.start,
                 duration: performance.now() - marker.start
