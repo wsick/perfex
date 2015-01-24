@@ -22,8 +22,18 @@ declare module perfex {
     }
     class timer {
         static all: ITiming[];
+        static get(tag?: string, phase?: string): ITiming[];
         static reset(): void;
         static start(tag: string): void;
         static stop(): void;
     }
+}
+interface Console {
+    table(data: any[]): any;
+}
+declare module perfex {
+    function table(): void;
+}
+declare module perfex {
+    function total(tag: string, phase?: string): number;
 }

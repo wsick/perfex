@@ -14,8 +14,14 @@ module perfex {
     }
 
     export class timer {
-        static get all () {
+        static get all (): ITiming[] {
             return timings.slice(0);
+        }
+
+        static get (tag?: string, phase?: string) {
+            return timer.all
+                .filter(m => tag == null || m.tag === tag)
+                .filter(m => phase == null || m.phase.tag === phase);
         }
 
         static reset () {
