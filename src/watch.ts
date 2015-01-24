@@ -14,7 +14,7 @@ module perfex {
     }
 
     export class timer {
-        static getTimings () {
+        static get all () {
             return timings.slice(0);
         }
 

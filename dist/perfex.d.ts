@@ -1,4 +1,7 @@
 declare module perfex {
+    var version: string;
+}
+declare module perfex {
     interface IPhase {
         tag: string;
         start: number;
@@ -6,6 +9,7 @@ declare module perfex {
     }
     class phases {
         static current: IPhase;
+        static all: IPhase[];
         static start(tag: string): void;
     }
 }
@@ -17,7 +21,7 @@ declare module perfex {
         duration: number;
     }
     class timer {
-        static getTimings(): ITiming[];
+        static all: ITiming[];
         static reset(): void;
         static start(tag: string): void;
         static stop(): void;

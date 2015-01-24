@@ -1,5 +1,9 @@
 var perfex;
 (function (perfex) {
+    perfex.version = '0.1.0';
+})(perfex || (perfex = {}));
+var perfex;
+(function (perfex) {
     var phaseTimings = [];
     var phases = (function () {
         function phases() {
@@ -11,7 +15,18 @@ var perfex;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(phases, "all", {
+            get: function () {
+                return phaseTimings.slice(0);
+            },
+            enumerable: true,
+            configurable: true
+        });
         phases.start = function (tag) {
+            var cur = phases.current;
+            if (cur) {
+                cur.duration = performance.now() - cur.start;
+            }
             phaseTimings.push({
                 tag: tag,
                 start: performance.now(),
@@ -29,9 +44,13 @@ var perfex;
     var timer = (function () {
         function timer() {
         }
-        timer.getTimings = function () {
-            return timings.slice(0);
-        };
+        Object.defineProperty(timer, "all", {
+            get: function () {
+                return timings.slice(0);
+            },
+            enumerable: true,
+            configurable: true
+        });
         timer.reset = function () {
             timings.length = 0;
         };
