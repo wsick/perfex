@@ -1,6 +1,6 @@
 var perfex;
 (function (perfex) {
-    perfex.version = '0.1.1';
+    perfex.version = '0.1.2';
 })(perfex || (perfex = {}));
 var perfex;
 (function (perfex) {
@@ -133,8 +133,18 @@ var perfex;
 var perfex;
 (function (perfex) {
     function total(tag, phase) {
-        return perfex.timer.get(tag, phase).reduce(function (agg, m) { return agg + (m.duration || 0); }, 0);
+        return perfex.timer.get(tag, phase).sort(function (a, b) { return (a.start === b.start) ? 0 : (a.start < b.start ? -1 : 1); }).reduce(function (agg, cur) {
+            if (timingsContain(agg, cur))
+                return agg;
+            return agg.concat([cur]);
+        }, []).reduce(function (agg, m) { return agg + (m.duration || 0); }, 0);
     }
     perfex.total = total;
+    function timingsContain(timings, test) {
+        return timings.some(function (timing) { return timing.tag === test.tag && timingContains(timing, test); });
+    }
+    function timingContains(timing, test) {
+        return (timing.start < test.start) && ((timing.start + timing.duration) > (test.start + test.duration));
+    }
 })(perfex || (perfex = {}));
 //# sourceMappingURL=perfex.js.map
