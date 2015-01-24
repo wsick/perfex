@@ -15,6 +15,15 @@ module perfex {
             return phaseTimings.slice(0);
         }
 
+        static getUniqueTags (): string[] {
+            return phases.all.map(t => t.tag)
+                .reduce((agg, cur) => {
+                    if (agg.indexOf(cur) > -1)
+                        return agg;
+                    return agg.concat([cur]);
+                }, []);
+        }
+
         static start (tag: string) {
             var cur = phases.current;
             if (cur) {

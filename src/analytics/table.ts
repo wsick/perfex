@@ -4,8 +4,8 @@ interface Console {
 
 module perfex {
     export function table () {
-        var tags = getTimerTags();
-        var phases = getPhaseTags();
+        var tags = timer.getUniqueTags();
+        var phases = phases.getUniqueTags();
 
         var records: TimingRecord[][] = tags
             .map(tag => {
@@ -31,24 +31,6 @@ module perfex {
             .filter(datum => datum['[Total](ms)'] > 0);
 
         console.table(data);
-    }
-
-    function getTimerTags (): string[] {
-        return timer.all.map(t => t.tag)
-            .reduce((agg, cur) => {
-                if (agg.indexOf(cur) > -1)
-                    return agg;
-                return agg.concat([cur]);
-            }, []);
-    }
-
-    function getPhaseTags (): string[] {
-        return phases.all.map(t => t.tag)
-            .reduce((agg, cur) => {
-                if (agg.indexOf(cur) > -1)
-                    return agg;
-                return agg.concat([cur]);
-            }, []);
     }
 
     class TimingRecord {

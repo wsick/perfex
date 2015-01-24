@@ -1,6 +1,6 @@
 var perfex;
 (function (perfex) {
-    perfex.version = '0.1.0';
+    perfex.version = '0.1.1';
 })(perfex || (perfex = {}));
 var perfex;
 (function (perfex) {
@@ -22,6 +22,13 @@ var perfex;
             enumerable: true,
             configurable: true
         });
+        phases.getUniqueTags = function () {
+            return phases.all.map(function (t) { return t.tag; }).reduce(function (agg, cur) {
+                if (agg.indexOf(cur) > -1)
+                    return agg;
+                return agg.concat([cur]);
+            }, []);
+        };
         phases.start = function (tag) {
             var cur = phases.current;
             if (cur) {
@@ -54,6 +61,13 @@ var perfex;
         timer.get = function (tag, phase) {
             return timer.all.filter(function (m) { return tag == null || m.tag === tag; }).filter(function (m) { return phase == null || m.phase.tag === phase; });
         };
+        timer.getUniqueTags = function () {
+            return timer.all.map(function (t) { return t.tag; }).reduce(function (agg, cur) {
+                if (agg.indexOf(cur) > -1)
+                    return agg;
+                return agg.concat([cur]);
+            }, []);
+        };
         timer.reset = function () {
             timings.length = 0;
         };
@@ -81,8 +95,8 @@ var perfex;
 var perfex;
 (function (perfex) {
     function table() {
-        var tags = getTimerTags();
-        var phases = getPhaseTags();
+        var tags = perfex.timer.getUniqueTags();
+        var phases = phases.getUniqueTags();
         var records = tags.map(function (tag) {
             return phases.map(function (phase) { return new TimingRecord(tag, phase); }).concat([new TimingRecord(tag, null)]);
         });
@@ -97,20 +111,6 @@ var perfex;
         console.table(data);
     }
     perfex.table = table;
-    function getTimerTags() {
-        return perfex.timer.all.map(function (t) { return t.tag; }).reduce(function (agg, cur) {
-            if (agg.indexOf(cur) > -1)
-                return agg;
-            return agg.concat([cur]);
-        }, []);
-    }
-    function getPhaseTags() {
-        return perfex.phases.all.map(function (t) { return t.tag; }).reduce(function (agg, cur) {
-            if (agg.indexOf(cur) > -1)
-                return agg;
-            return agg.concat([cur]);
-        }, []);
-    }
     var TimingRecord = (function () {
         function TimingRecord(timerTag, phaseTag) {
             this.timerTag = timerTag;

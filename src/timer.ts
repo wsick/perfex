@@ -26,6 +26,15 @@ module perfex {
                 .filter(m => phase == null || m.phase.tag === phase);
         }
 
+        static getUniqueTags (): string[] {
+            return timer.all.map(t => t.tag)
+                .reduce((agg, cur) => {
+                    if (agg.indexOf(cur) > -1)
+                        return agg;
+                    return agg.concat([cur]);
+                }, []);
+        }
+
         static reset () {
             timings.length = 0;
         }
