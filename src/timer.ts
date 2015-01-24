@@ -26,6 +26,15 @@ module perfex {
                 .filter(m => phase == null || m.phase.tag === phase);
         }
 
+        static count (tag?: string, phase?: string) {
+            return timer.get(tag, phase).length;
+        }
+
+        static getSplit (tag?: string, phase?: string): ISplitTiming[] {
+            //Implemented in split.ts
+            return [];
+        }
+
         static getUniqueTags (): string[] {
             return timer.all.map(t => t.tag)
                 .reduce((agg, cur) => {

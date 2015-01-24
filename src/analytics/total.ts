@@ -18,4 +18,13 @@ module perfex {
         return (timing.start < test.start)
             && ((timing.start + timing.duration) > (test.start + test.duration));
     }
+
+    export function xtotal (tag: string, phase?: string): number {
+        return timer.getSplit(tag, phase)
+            .map(st => {
+                var totalexc = st.exclusions.reduce((agg, cur) => agg + ((cur.end - cur.start) || 0), 0);
+                return st.duration - totalexc;
+            })
+            .reduce((agg, t) => t, 0);
+    }
 }
