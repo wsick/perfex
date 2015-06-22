@@ -1,7 +1,22 @@
 var perfex;
 (function (perfex) {
-    perfex.version = '0.1.3';
+    perfex.version = '0.1.4';
 })(perfex || (perfex = {}));
+(function () {
+    Date.now = Date.now || (function () { return new Date().getTime(); });
+})();
+/// <reference path="Date_now.ts" />
+(function (context) {
+    if (!("performance" in context))
+        context.performance = {};
+    if (!("now" in context.performance)) {
+        var nowOffset = Date.now();
+        if (performance.timing && performance.timing.navigationStart) {
+            nowOffset = performance.timing.navigationStart;
+        }
+        context.performance.now = function () { return Date.now() - nowOffset; };
+    }
+})(window);
 var perfex;
 (function (perfex) {
     var phaseTimings = [];
@@ -23,7 +38,8 @@ var perfex;
             configurable: true
         });
         phases.getUniqueTags = function () {
-            return phases.all.map(function (t) { return t.tag; }).reduce(function (agg, cur) {
+            return phases.all.map(function (t) { return t.tag; })
+                .reduce(function (agg, cur) {
                 if (agg.indexOf(cur) > -1)
                     return agg;
                 return agg.concat([cur]);
@@ -59,7 +75,9 @@ var perfex;
             configurable: true
         });
         timer.get = function (tag, phase) {
-            return timer.all.filter(function (m) { return tag == null || m.tag === tag; }).filter(function (m) { return phase == null || m.phase.tag === phase; });
+            return timer.all
+                .filter(function (m) { return tag == null || m.tag === tag; })
+                .filter(function (m) { return phase == null || m.phase.tag === phase; });
         };
         timer.count = function (tag, phase) {
             return timer.get(tag, phase).length;
@@ -69,7 +87,8 @@ var perfex;
             return [];
         };
         timer.getUniqueTags = function () {
-            return timer.all.map(function (t) { return t.tag; }).reduce(function (agg, cur) {
+            return timer.all.map(function (t) { return t.tag; })
+                .reduce(function (agg, cur) {
                 if (agg.indexOf(cur) > -1)
                     return agg;
                 return agg.concat([cur]);
@@ -103,8 +122,11 @@ var perfex;
 var perfex;
 (function (perfex) {
     perfex.timer.getSplit = function (tag, phase) {
-        var all = perfex.timer.get(null, null).sort(function (a, b) { return (a.start === b.start) ? 0 : (a.start < b.start ? -1 : 1); });
-        var filtered = perfex.timer.get(tag, phase).sort(function (a, b) { return (a.start === b.start) ? 0 : (a.start < b.start ? -1 : 1); }).map(function (timing) { return ({
+        var all = perfex.timer.get(null, null)
+            .sort(function (a, b) { return (a.start === b.start) ? 0 : (a.start < b.start ? -1 : 1); });
+        var filtered = perfex.timer.get(tag, phase)
+            .sort(function (a, b) { return (a.start === b.start) ? 0 : (a.start < b.start ? -1 : 1); })
+            .map(function (timing) { return ({
             tag: timing.tag,
             context: timing.context,
             phase: timing.phase,
@@ -117,7 +139,9 @@ var perfex;
     };
     function splitTiming(timing, all) {
         //Initializes timing.exclusions which is first-level child timings
-        all.filter(function (inner) { return !isSameTiming(timing, inner); }).filter(function (inner) { return isTimingInside(timing, inner); }).forEach(function (inner) {
+        all.filter(function (inner) { return !isSameTiming(timing, inner); })
+            .filter(function (inner) { return isTimingInside(timing, inner); })
+            .forEach(function (inner) {
             //Assumes incoming timings are processed in order
             if (timing.exclusions.some(function (exclusion) { return (inner.start > exclusion.start && (inner.start + inner.duration) < exclusion.end); }))
                 return;
@@ -125,12 +149,15 @@ var perfex;
         });
     }
     function isSameTiming(timing1, timing2) {
-        return timing1.tag === timing2.tag && timing1.start === timing2.start && timing1.duration === timing2.duration;
+        return timing1.tag === timing2.tag
+            && timing1.start === timing2.start
+            && timing1.duration === timing2.duration;
     }
     function isTimingInside(timing, test) {
         var end = timing.start + timing.duration;
         var tend = test.start + test.duration;
-        return timing.start <= test.start && end >= tend;
+        return timing.start <= test.start
+            && end >= tend;
     }
 })(perfex || (perfex = {}));
 var perfex;
@@ -145,17 +172,26 @@ var perfex;
     function table() {
         var tags = perfex.timer.getUniqueTags();
         var phases = perfex.phases.getUniqueTags();
-        var records = tags.map(function (tag) {
-            return phases.map(function (phase) { return new TimingRecord(tag, phase); }).concat([new TimingRecord(tag, null)]);
+        var records = tags
+            .map(function (tag) {
+            return phases
+                .map(function (phase) { return new TimingRecord(tag, phase); })
+                .concat([new TimingRecord(tag, null)]);
         });
         //Totals Record
-        var totals = phases.map(function (phase) { return new TimingRecord(null, phase); }).concat([new TimingRecord(null, null)]);
-        var data = records.concat([totals]).map(function (rec) {
+        var totals = phases
+            .map(function (phase) { return new TimingRecord(null, phase); })
+            .concat([new TimingRecord(null, null)]);
+        var data = records
+            .concat([totals])
+            .map(function (rec) {
             var mk = rec[0].timerTag;
             var obj = { "(marker)": mk || "Total" };
-            rec.filter(function (tr) { return !isNaN(tr.percentage); }).forEach(function (tr) { return tr.mapOnto(obj); });
+            rec.filter(function (tr) { return !isNaN(tr.percentage); })
+                .forEach(function (tr) { return tr.mapOnto(obj); });
             return obj;
-        }).filter(function (datum) { return datum['[Total](ms)'] > 0; });
+        })
+            .filter(function (datum) { return datum['[Total](ms)'] > 0; });
         console.table(data);
     }
     perfex.table = table;
@@ -181,24 +217,30 @@ var perfex;
 var perfex;
 (function (perfex) {
     function total(tag, phase) {
-        return perfex.timer.get(tag, phase).sort(function (a, b) { return (a.start === b.start) ? 0 : (a.start < b.start ? -1 : 1); }).reduce(function (agg, cur) {
+        return perfex.timer.get(tag, phase)
+            .sort(function (a, b) { return (a.start === b.start) ? 0 : (a.start < b.start ? -1 : 1); })
+            .reduce(function (agg, cur) {
             if (timingsContain(agg, cur))
                 return agg;
             return agg.concat([cur]);
-        }, []).reduce(function (agg, m) { return agg + (m.duration || 0); }, 0);
+        }, [])
+            .reduce(function (agg, m) { return agg + (m.duration || 0); }, 0);
     }
     perfex.total = total;
     function timingsContain(timings, test) {
         return timings.some(function (timing) { return timing.tag === test.tag && timingContains(timing, test); });
     }
     function timingContains(timing, test) {
-        return (timing.start < test.start) && ((timing.start + timing.duration) > (test.start + test.duration));
+        return (timing.start < test.start)
+            && ((timing.start + timing.duration) > (test.start + test.duration));
     }
     function xtotal(tag, phase) {
-        return perfex.timer.getSplit(tag, phase).map(function (st) {
+        return perfex.timer.getSplit(tag, phase)
+            .map(function (st) {
             var totalexc = st.exclusions.reduce(function (agg, cur) { return agg + ((cur.end - cur.start) || 0); }, 0);
             return st.duration - totalexc;
-        }).reduce(function (agg, t) { return t; }, 0);
+        })
+            .reduce(function (agg, t) { return t; }, 0);
     }
     perfex.xtotal = xtotal;
 })(perfex || (perfex = {}));

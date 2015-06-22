@@ -62,6 +62,7 @@ module.exports = function (grunt) {
                 src: [
                     'typings/**/*.d.ts',
                     './src/_Version.ts',
+                    './src/polyfill/**.ts',
                     './src/*.ts',
                     './src/**/*.ts'
                 ].concat(unify.typings({includeSelf: false})),
@@ -81,7 +82,7 @@ module.exports = function (grunt) {
                 dest: dirs.test.build,
                 options: {
                     target: 'es5',
-                    basePath: dirs.test.root,
+                    rootDir: dirs.test.root,
                     module: 'amd',
                     sourceMap: true
                 }
